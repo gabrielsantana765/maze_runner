@@ -97,7 +97,7 @@ bool walk(pos_t pos) {
 		// Marcar a posição atual com o símbolo '.'
 		maze[pos.i][pos.j] = '.';
 		// Limpa a tela
-		system("clear");
+		system("cls");
 		// Imprime o labirinto
 		for (int i = 0; i < num_rows; ++i) {
             for (int j = 0; j < num_cols; ++j) {
@@ -105,6 +105,8 @@ bool walk(pos_t pos) {
             }
             printf("\n");
         }
+
+        
 		/* Dado a posição atual, verifica quais sao as próximas posições válidas
 			Checar se as posições abaixo são validas (i>0, i<num_rows, j>0, j <num_cols)
 		 	e se são posições ainda não visitadas (ou seja, caracter 'x') e inserir
@@ -114,10 +116,11 @@ bool walk(pos_t pos) {
 		 		- pos.i+1, pos.j
 		 		- pos.i-1, pos.j
 		 	Caso alguma das posiçÕes validas seja igual a 's', retornar verdadeiro
-	 	*/
+	 	
 		if (maze[pos.i][pos.j] == 's') {
             return true;
         }
+        */
 		 // Verifica se a posição atual é a saída
         if (maze[pos.i][pos.j] == 's') {
             return true;
@@ -156,6 +159,7 @@ bool walk(pos_t pos) {
 		if (!valid_positions.empty()) {
             pos_t next_position = valid_positions.top();
             valid_positions.pop();
+            pos = next_position;
             // Chame recursivamente a função walk com a próxima posição
             if (walk(next_position)) {
                 return true;  // Se a saída foi encontrada
