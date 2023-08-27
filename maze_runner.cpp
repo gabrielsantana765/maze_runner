@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stack>
 #include <cstdlib>
+#include <iostream>
 
 // Matriz de char representnado o labirinto
 char** maze; // Voce também pode representar o labirinto como um vetor de vetores de char (vector<vector<char>>)
@@ -88,87 +89,59 @@ void print_maze() {
 }
 
 
-// Função responsável pela navegação.
-// Recebe como entrada a posição initial e retorna um booleando indicando se a saída foi encontrada
+//começo
 bool walk(pos_t pos) {
-	
-	// Repita até que a saída seja encontrada ou não existam mais posições não exploradas
-	 while (true) {
-		// Marcar a posição atual com o símbolo '.'
-		maze[pos.i][pos.j] = '.';
-		// Limpa a tela
-		system("cls");
-		// Imprime o labirinto
-		for (int i = 0; i < num_rows; ++i) {
-            for (int j = 0; j < num_cols; ++j) {
-                printf("%c ", maze[i][j]);
-            }
-            printf("\n");
-        }
-
+    while (true) {
+        // Tentar explorar as próximas posições válidas
         
-		/* Dado a posição atual, verifica quais sao as próximas posições válidas
-			Checar se as posições abaixo são validas (i>0, i<num_rows, j>0, j <num_cols)
-		 	e se são posições ainda não visitadas (ou seja, caracter 'x') e inserir
-		 	cada uma delas no vetor valid_positions
-		 		- pos.i, pos.j+1
-		 		- pos.i, pos.j-1
-		 		- pos.i+1, pos.j
-		 		- pos.i-1, pos.j
-		 	Caso alguma das posiçÕes validas seja igual a 's', retornar verdadeiro
-	 	
-		if (maze[pos.i][pos.j] == 's') {
-            return true;
-        }
-        */
-		 // Verifica se a posição atual é a saída
-        if (maze[pos.i][pos.j] == 's') {
-            return true;
-        }
-        
-        // Verifica as próximas posições válidas
-        // Checa posições abaixo, acima, à direita e à esquerda
         pos_t next_positions[4] = {
-            {pos.i, pos.j + 1},  // Direita
-            {pos.i, pos.j - 1},  // Esquerda
-            {pos.i + 1, pos.j},  // Abaixo
-            {pos.i - 1, pos.j}   // Acima
+            {pos.i, pos.j + 1},
+            {pos.i, pos.j - 1},
+            {pos.i + 1, pos.j},
+            {pos.i - 1, pos.j}
         };
+        
+        bool position_found = false; // Variável para indicar se encontramos uma posição válida
         
         for (int i = 0; i < 4; ++i) {
             int new_i = next_positions[i].i;
             int new_j = next_positions[i].j;
-            
-            // Verifica se a nova posição está dentro dos limites do labirinto
             if (new_i >= 0 && new_i < num_rows && new_j >= 0 && new_j < num_cols) {
-                // Verifica se a nova posição é válida para explorar
                 if (maze[new_i][new_j] == 'x') {
+                    position_found = true; // Indica que encontramos uma posição válida
                     valid_positions.push({new_i, new_j});
-                    // Se a nova posição for a saída, retornar verdadeiro
-                    if (maze[new_i][new_j] == 's') {
+                    if (maze[new_i][new_j] == 's'|| maze[pos.i][pos.j] == 's') {
                         return true;
                     }
+                    maze[new_i][new_j] = '.'; // Mark as visited
                 }
             }
         }
-		
-	
-		// Verifica se a pilha de posições nao esta vazia 
-		//Caso não esteja, pegar o primeiro valor de  valid_positions, remove-lo e chamar a funçao walk com esse valor
-		// Caso contrario, retornar falso
-		if (!valid_positions.empty()) {
+        
+        // Verificar se a posição atual é a saída
+        if (maze[pos.i][pos.j] == 's') {
+            return true;
+        }
+        
+        if (position_found) {
             pos_t next_position = valid_positions.top();
             valid_positions.pop();
             pos = next_position;
-            // Chame recursivamente a função walk com a próxima posição
-            if (walk(next_position)) {
-                return true;  // Se a saída foi encontrada
-            }
         } else {
-            return false;  // Se não há mais posições a serem exploradas
+            return false; // Nenhuma posição disponível para explorar
+        }
+        
+        // Imprimir o labirinto (para fins de depuração)
+        for (int i = 0; i < num_rows; ++i) {
+            for (int j = 0; j < num_cols; ++j) {
+                std::cout << maze[i][j] << ' ';
+            }
+            std::cout << '\n';
         }
     }
 }
+
+//fim
 
 int main(int argc, char* argv[]) {
 	// carregar o labirinto com o nome do arquivo recebido como argumento
@@ -177,6 +150,10 @@ int main(int argc, char* argv[]) {
 	bool exit_found = walk(initial_pos);
 	
 	// Tratar o retorno (imprimir mensagem)
-	
+	if (exit_found) {
+        std::cout << "Saída encontrada!\n";
+    } else {
+        std::cout << "Saída não encontrada.\n";
+    }
 	return 0;
 }
