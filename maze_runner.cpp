@@ -88,59 +88,6 @@ void print_maze() {
 	}
 }
 
-/*
-//começo
-bool walk(pos_t pos) {
-    while (true) {
-        // Tentar explorar as próximas posições válidas
-        
-        pos_t next_positions[4] = {
-            {pos.i, pos.j + 1},
-            {pos.i, pos.j - 1},
-            {pos.i + 1, pos.j},
-            {pos.i - 1, pos.j}
-        };
-        
-        bool position_found = false; // Variável para indicar se encontramos uma posição válida
-        
-        for (int i = 0; i < 4; ++i) {
-            int new_i = next_positions[i].i;
-            int new_j = next_positions[i].j;
-            if (new_i >= 0 && new_i < num_rows && new_j >= 0 && new_j < num_cols) {
-                if (maze[new_i][new_j] == 'x') {
-                    position_found = true; // Indica que encontramos uma posição válida
-                    valid_positions.push({new_i, new_j});
-                    if (maze[new_i][new_j] == 's'|| maze[pos.i][pos.j] == 's') {
-                        return true;
-                    }
-                    maze[new_i][new_j] = '.'; // Mark as visited
-                }
-            }
-        }
-        
-        // Verificar se a posição atual é a saída
-        if (maze[pos.i][pos.j] == 's') {
-            return true;
-        }
-        
-        if (position_found) {
-            pos_t next_position = valid_positions.top();
-            valid_positions.pop();
-            pos = next_position;
-        } else {
-            return false; // Nenhuma posição disponível para explorar
-        }
-        
-        // Imprimir o labirinto (para fins de depuração)
-        for (int i = 0; i < num_rows; ++i) {
-            for (int j = 0; j < num_cols; ++j) {
-                std::cout << maze[i][j] << ' ';
-            }
-            std::cout << '\n';
-        }
-    }
-}
-*/
 bool walk(pos_t initial_pos) {
     valid_positions.push(initial_pos);
 
@@ -189,6 +136,7 @@ bool walk(pos_t initial_pos) {
             }
             std::cout << '\n';
         }
+        std::cout << '\n';
     }
 
     return false;
