@@ -88,7 +88,7 @@ void print_maze() {
 	}
 }
 
-
+/*
 //começo
 bool walk(pos_t pos) {
     while (true) {
@@ -140,6 +140,61 @@ bool walk(pos_t pos) {
         }
     }
 }
+*/
+bool walk(pos_t initial_pos) {
+    valid_positions.push(initial_pos);
+
+    while (!valid_positions.empty()) {
+        pos_t pos = valid_positions.top();
+        
+        if (maze[pos.i][pos.j] == 's') {
+            return true;
+        }
+
+        bool position_found = false;
+
+        pos_t next_positions[4] = {
+            {pos.i, pos.j + 1},
+            {pos.i, pos.j - 1},
+            {pos.i + 1, pos.j},
+            {pos.i - 1, pos.j}
+        };
+
+        for (int i = 0; i < 4; ++i) {
+            int new_i = next_positions[i].i;
+            int new_j = next_positions[i].j;
+
+            if (new_i >= 0 && new_i < num_rows && new_j >= 0 && new_j < num_cols) {
+                if (maze[new_i][new_j] == 's') {
+                    
+            return true;
+            }
+                if (maze[new_i][new_j] == 'x') {
+                    position_found = true;
+                    maze[new_i][new_j] = '.'; // Marcar como visitada
+                    valid_positions.push({new_i, new_j});
+                    break;
+                }
+            }
+        }
+        
+        if (!position_found) {
+            valid_positions.pop();
+        }
+        
+        // Imprimir o labirinto (para fins de depuração)
+        for (int i = 0; i < num_rows; ++i) {
+            for (int j = 0; j < num_cols; ++j) {
+                std::cout << maze[i][j];
+            }
+            std::cout << '\n';
+        }
+    }
+
+    return false;
+}
+
+
 
 //fim
 
