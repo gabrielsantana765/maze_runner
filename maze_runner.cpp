@@ -2,6 +2,7 @@
 #include <stack>
 #include <cstdlib>
 #include <iostream>
+#include <thread>
 
 // Matriz de char representnado o labirinto
 char** maze; // Voce também pode representar o labirinto como um vetor de vetores de char (vector<vector<char>>)
@@ -128,7 +129,7 @@ bool walk(pos_t initial_pos) {
         if (!position_found) {
             valid_positions.pop();
         }
-        
+        system ("clear");
         // Imprimir o labirinto (para fins de depuração)
         for (int i = 0; i < num_rows; ++i) {
             for (int j = 0; j < num_cols; ++j) {
@@ -137,6 +138,8 @@ bool walk(pos_t initial_pos) {
             std::cout << '\n';
         }
         std::cout << '\n';
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
 
     return false;
