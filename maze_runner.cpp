@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <thread>
+#include <vector>
+#include <chrono>
 
 // Matriz de char representnado o labirinto
 char** maze; // Voce também pode representar o labirinto como um vetor de vetores de char (vector<vector<char>>)
@@ -145,6 +147,77 @@ bool walk(pos_t initial_pos) {
     return false;
 }
 
+bool explore(pos_t initial_pos) {
+    valid_positions.push(initial_pos);
+
+    while (!valid_positions.empty()) {
+        pos_t pos = valid_positions.top();
+
+        if (maze[pos.i][pos.j] == 's') {
+            return true;
+        }
+
+        bool position_found = false;
+        int valid_neighbor_count = 0;
+        pos_t next_positions[4] = {
+            {pos.i, pos.j + 1},
+            {pos.i, pos.j - 1},
+            {pos.i + 1, pos.j},
+            {pos.i - 1, pos.j}
+        };
+
+        std::vector<std::thread> threads; // Para armazenar as threads dinâmicas
+pos_t new_position = {0, 0};
+        for (int i = 0; i < 4; ++i) {
+            int new_i = next_positions[i].i;
+            int new_j = next_positions[i].j;
+
+            if (new_i >= 0 && new_i < num_rows && new_j >= 0 && new_j < num_cols) {
+                if (maze[new_i][new_j] == 's') {
+                    return true;
+                }
+                if (maze[new_i][new_j] == 'x') {
+                    position_found = true;
+                    valid_neighbor_count++;
+                    maze[new_i][new_j] = '.'; // Marcar como visitada
+                    valid_positions.push({new_i, new_j});
+                    new_position = {new_i, new_j};
+                    // Criar uma nova thread para explorar o próximo caminho
+                }
+            }
+        }
+        if (valid_neighbor_count > 0) {                  
+        threads.emplace_back(explore, new_position);
+        if (!position_found) {
+            valid_positions.pop();
+        }
+        }
+
+        if (!position_found) {
+            valid_positions.pop();
+        }
+
+
+        // Aguardar todas as threads dinâmicas criadas terminarem
+        for (auto& thread : threads) {
+            thread.join();
+        }
+
+        system("clear");
+        // Imprimir o labirinto (para fins de depuração)
+        for (int i = 0; i < num_rows; ++i) {
+            for (int j = 0; j < num_cols; ++j) {
+                std::cout << maze[i][j];
+            }
+            std::cout << '\n';
+        }
+        std::cout << '\n';
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    }
+
+    return false;
+}
 
 
 //fim
@@ -153,7 +226,7 @@ int main(int argc, char* argv[]) {
 	// carregar o labirinto com o nome do arquivo recebido como argumento
 	pos_t initial_pos = load_maze(argv[1]);
 	// chamar a função de navegação
-	bool exit_found = walk(initial_pos);
+	bool exit_found = explore(initial_pos);
 	
 	// Tratar o retorno (imprimir mensagem)
 	if (exit_found) {
