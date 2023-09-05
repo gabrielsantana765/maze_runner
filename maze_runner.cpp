@@ -83,12 +83,17 @@ maze = (char**)malloc(num_rows * sizeof(char*));
 
 // Função que imprime o labirinto
 void print_maze() {
-	for (int i = 0; i < num_rows; ++i) {
-		for (int j = 0; j < num_cols; ++j) {
-			printf("%c", maze[i][j]);
-		}
-		printf("\n");
-	}
+	system("clear");
+        // Imprimir o labirinto (para fins de depuração)
+        for (int i = 0; i < num_rows; ++i) {
+            for (int j = 0; j < num_cols; ++j) {
+                std::cout << maze[i][j];
+            }
+            std::cout << '\n';
+        }
+        std::cout << '\n';
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
 }
 
 bool walk(pos_t initial_pos) {
@@ -188,9 +193,10 @@ pos_t new_position = {0, 0};
         }
         if (valid_neighbor_count > 0) {                  
         threads.emplace_back(explore, new_position);
-        if (!position_found) {
-            valid_positions.pop();
-        }
+        std::this_thread::sleep_for(std::chrono::milliseconds(50));
+            if (!position_found) {
+                valid_positions.pop();
+            }
         }
 
         if (!position_found) {
@@ -202,20 +208,11 @@ pos_t new_position = {0, 0};
         for (auto& thread : threads) {
             thread.join();
         }
+    std::thread print_thread(print_maze);
+    print_thread.join();
 
-        system("clear");
-        // Imprimir o labirinto (para fins de depuração)
-        for (int i = 0; i < num_rows; ++i) {
-            for (int j = 0; j < num_cols; ++j) {
-                std::cout << maze[i][j];
-            }
-            std::cout << '\n';
-        }
-        std::cout << '\n';
-
-        std::this_thread::sleep_for(std::chrono::milliseconds(50));
     }
-
+    
     return false;
 }
 
@@ -226,7 +223,9 @@ int main(int argc, char* argv[]) {
 	// carregar o labirinto com o nome do arquivo recebido como argumento
 	pos_t initial_pos = load_maze(argv[1]);
 	// chamar a função de navegação
+    //std::thread print_thread(print_maze);
 	bool exit_found = explore(initial_pos);
+    //print_thread.join();
 	
 	// Tratar o retorno (imprimir mensagem)
 	if (exit_found) {
